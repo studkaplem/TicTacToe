@@ -7,6 +7,8 @@ import java.awt.event.MouseListener;
 
 public class GamePanel extends JPanel implements MouseListener {
 
+    private WinResult winResult = null;
+
     public GamePanel(){
         setBackground(Color.WHITE);
         requestFocus(); // Fokusiert, anklickbar
@@ -25,6 +27,23 @@ public class GamePanel extends JPanel implements MouseListener {
         // Felderzeichnen
         for (Field field: TicTacToe.instance.getFields()) {
             field.draw(g2d);
+        }
+
+        // Gewinnlinie zeichnen
+        if (winResult != null){
+            g2d.setColor(Color.red); // Farbe des Stiftes ändern
+            g2d.setStroke(new BasicStroke(10)); // Dicke des Stiftes in 10 Pixel geändert
+            g2d.drawLine(
+                    // Hälfte der x-Koordinate
+                    (int) (winResult.getField1().getX() + winResult.getField1().getWidth()/2),
+                    // Hälfte der y-Koordinate
+                    (int) (winResult.getField1().getY() + winResult.getField1().getHeight()/2),
+                    (int) (winResult.getField2().getX() + winResult.getField2().getWidth()/2),
+                    (int) (winResult.getField2().getY() + winResult.getField2().getHeight()/2)
+            );
+
+            // rote Linie verschwindet
+            winResult = null;
         }
     }
 
@@ -47,7 +66,10 @@ public class GamePanel extends JPanel implements MouseListener {
     }
 
     private void checkWin(){
-        if (TicTacToe.instance.isWon()){
+        WinResult tempWinResult = TicTacToe.instance.getWinResult();
+        if (tempWinResult.isWon()){
+            winResult = tempWinResult;
+            repaint();
             JOptionPane.showMessageDialog(
                     this,
                     "Spieler "+TicTacToe.instance.getCurrentPlayer().name()+" hat gewonnen",
@@ -76,6 +98,7 @@ public class GamePanel extends JPanel implements MouseListener {
         checkWin();
     }
 
+    // Der Rest der Methoden werden nicht verwendet
     @Override
     public void mousePressed(MouseEvent e) {}
 

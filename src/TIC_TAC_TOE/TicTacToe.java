@@ -6,6 +6,21 @@ public class TicTacToe {
 
     private FieldValue currentPlayer;
     private ArrayList<Field> fields ;
+    private int[] winningConstellations = new int[] {
+            // Zeilen
+            0, 1, 2,
+            3, 4, 5,
+            6, 7, 8,
+            // Spalten
+            0, 3, 6,
+            1, 4, 7,
+            2, 5, 8,
+            // Diagonalen
+            0, 4, 8,
+            6, 4, 2
+    };
+
+    private GameWindow game;
 
     public static TicTacToe instance;
 
@@ -14,7 +29,7 @@ public class TicTacToe {
     }
 
     public TicTacToe(){
-        new GameWindow(450,475);
+        game = new GameWindow(450,475);
         initGame();
     }
 
@@ -24,6 +39,7 @@ public class TicTacToe {
         // Game Objekte
         // Player
         currentPlayer = FieldValue.X;
+        nextPlayerTurn();
         // Fields
         int fieldsMarginLeft = 15;
         int fieldsMarginTop = 4;
@@ -54,11 +70,15 @@ public class TicTacToe {
 
     // Player sollen sich abwechseln
     public void nextPlayerTurn(){
+
+        game.setCurrenPlayerLabelTExt("Aktueller Spieler ist "+currentPlayer.name() +" !");
+
         if (currentPlayer == FieldValue.X){
             currentPlayer = FieldValue.O;
         }else {
             currentPlayer = FieldValue.X;
         }
+
     }
 
     // Zugriff auf ArrayList gewährleisten mit GETTER
@@ -66,7 +86,8 @@ public class TicTacToe {
         return fields;
     }
 
-    public boolean isWon(){
+    // Code ist nicht effizient
+    /*public boolean isWon(){
 
         // Matrix mit 3 Zeilen und 3 Spalten
         int[][] matrix = new int[3][3];
@@ -85,11 +106,11 @@ public class TicTacToe {
         matrix[2][2] = fields.get(8).getValue().getValue();
 
 
-                /*
-                 Math.abs() rechnet betrag aus
+                *//*
+                 Math.abs() rechnet Betrag aus
                  Ergebnis kann entweder 3 oder -3 sein
                  durch Math.abs() wird das Ergebnis automatisch positiv
-                  */
+                  *//*
         return // Zeilen
                 Math.abs(matrix[0][0] + matrix[0][1] + matrix[0][2]) == 3 ||
                 Math.abs(matrix[1][0] + matrix[1][1] + matrix[1][2]) == 3 ||
@@ -102,6 +123,24 @@ public class TicTacToe {
                 Math.abs(matrix[0][0] + matrix[1][1] + matrix[2][2]) == 3 ||
                 Math.abs(matrix[0][2] + matrix[1][1] + matrix[2][0]) == 3;
 
+    }*/
+
+    // besserer Algorithmus
+    public WinResult getWinResult(){
+        // Alle Feld-Konstellationnen untersuchen blockweise daher i+3
+        for (int i = 0; i < winningConstellations.length; i += 3){
+
+            int a = winningConstellations[i];
+            int b = winningConstellations[i+1];
+            int c = winningConstellations[i+2];
+
+            // Bedingung für Gewinn
+            if (Math.abs(fields.get(a).getValue().getValue() + fields.get(b).getValue().getValue() + fields.get(c).getValue().getValue()) == 3){
+                return new WinResult(true,fields.get(a),fields.get(c));
+            }
+        }
+        // verloren
+        return new WinResult(false, null, null);
     }
 
     public boolean isUndecided(){
@@ -113,7 +152,7 @@ public class TicTacToe {
             }
         }
         // Wenn es einen Sieger gibts dann gibt es kein Unentschieden
-        if (isWon()){
+        if (getWinResult().isWon()){
             return false;
         }
             return true;

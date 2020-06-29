@@ -1,9 +1,11 @@
 package TIC_TAC_TOE;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 
 public class GameWindow extends JFrame {
+    protected GameWindow instance2;
 
     // weil wir es ausserhalb dieser Klasse benutzen möchten
     private JLabel currenPlayerLabel;
@@ -20,10 +22,16 @@ public class GameWindow extends JFrame {
         // Komponennte im Fenster die ganze Inhalt beinhalten soll
         getContentPane().add(gamePanel, BorderLayout.CENTER);
 
-        currenPlayerLabel = new JLabel("Platzhalter");
+        currenPlayerLabel = new JLabel("PlatzHalter!");
+        // zentrieren
+        currenPlayerLabel.setHorizontalAlignment(SwingConstants.CENTER);
         // JLabel erscheint über Fenster
         getContentPane().add(currenPlayerLabel,BorderLayout.NORTH);
 
         setVisible(true);
+    }
+
+    public void setCurrenPlayerLabelTExt(String s) {
+        currenPlayerLabel.setText(s);
     }
 }
